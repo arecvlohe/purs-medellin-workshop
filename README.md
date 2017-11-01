@@ -4,24 +4,24 @@
 
 1. Install psc-package and pulp
 
-```node
+```bash
 npm i -g psc-package pulp
 ```
 
 2. Initialize the project
 
-```node
+```bash
 pulp --psc-package init
 ```
 
 3. Build the project
 
-```node
+```bash
 pulp --psc-package run
 ```
 
 4. Do your happy dance!
 
-```node
+```bash
 My first PureScript project 🕺
 ```
