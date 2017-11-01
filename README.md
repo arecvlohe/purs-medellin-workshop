@@ -73,7 +73,7 @@ pulp server
 My first PureScript app 💃
 ```
 
-## Hello Pux!
+## Part 3: Hello Pux!
 
 1. Install Pux
 
