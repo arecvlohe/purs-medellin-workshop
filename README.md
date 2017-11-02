@@ -162,3 +162,55 @@ pulp server
 ```bash
 My first PureScript app that does something 🕺 💃
 ```
+
+## Part 4: Add Effects
+
+1. Install the aff module
+
+```bash
+psc-package install aff
+```
+
+2. Import modules
+
+```haskell
+import Control.Monad.Aff.Console (CONSOLE, log)
+import Data.Maybe (Maybe(..)) -- Part of Prelude
+```
+
+3. Define App Effects
+
+```haskell
+type AppEffects = ( console:: CONSOLE )
+```
+
+4. Log state to console
+
+```haskell
+foldp :: ∀ fx. Event -> State -> EffModel State Event AppEffects -- 👈
+foldp Increment n = { state: n + 1, effects: [
+  do
+    log $ "Current State: " <> (show $ n + 1)
+    pure Nothing
+]}
+foldp Decrement n = { state: n - 1, effects: [
+  do
+    log $ "Current State: " <> (show $ n - 1)
+    pure Nothing
+]}
+```
+
+5. Update Main
+
+```haskell
+main :: ∀ fx. Eff (CoreEffects AppEffects) Unit -- 👈
+main = do
+  app <- start
+    { initialState: 0
+    , view
+    , foldp
+    , inputs: []
+    }
+
+  renderToDOM "#app" app.markup app.input
+```
