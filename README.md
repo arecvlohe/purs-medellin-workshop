@@ -214,3 +214,9 @@ main = do
 
   renderToDOM "#app" app.markup app.input
 ```
+
+6. Do your happy dance!
+
+```bash
+My first PureScript side-effect 🕺
+```
