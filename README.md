@@ -330,3 +330,69 @@ main = do
 ```bash
 My first PureScript HTTP request 🕺 💃
 ```
+
+## Part 6: Make request from user input
+
+1. Update Imports
+
+```haskell
+import Pux.DOM.Events (onClick, onChange, DOMEvent, targetValue)
+import Text.Smolder.HTML (button, div, img, input)
+import Text.Smolder.HTML.Attributes (src, type', value)
+```
+
+2. Update state
+
+```haskell
+type State =
+  { url :: Url
+  , input :: String
+  }
+```
+
+3. Update
+
+```haskell
+foldp :: ∀ fx. Event -> State -> EffModel State Event AppEffects
+foldp RequestGiphy state = { state: state, effects: [
+  do
+    result <- attempt $ get $ "https://api.giphy.com/v1/gifs/random?api_key=670526ba3bda46629f097f67890105ed&tag=" <> state.input <> "&rating=G"
+    let decode res = decodeJson res.response :: Either String Url
+    let url = either (Left <<< show) decode result
+    pure $ Just $ ReceiveGiphy url
+]}
+foldp (ReceiveGiphy (Left _)) state = { state: state, effects: [ log "Error" *> pure Nothing ] }
+foldp (ReceiveGiphy (Right url)) state = { state: state { url = url }, effects: [ log "ReceivedGiphy" *> pure Nothing ]}
+foldp (UserInput ev) state = { state: state { input = targetValue ev }, effects: [] }
+```
+
+4. View
+
+```haskell
+view state =
+  div do
+    input ! type' "text" #! onChange UserInput ! value state.input
+    button #! onClick (const RequestGiphy) $ text "Get Random Giphy"
+    img ! src (unwrap state.url)
+```
+
+5. Main
+
+```haskell
+main :: ∀ fx. Eff (CoreEffects AppEffects) Unit
+main = do
+  app <- start
+    { initialState: { input: "", url: Url "" } -- 👈
+    , view
+    , foldp
+    , inputs: []
+    }
+
+  renderToDOM "#app" app.markup app.input
+```
+
+6. Do your happy dance!
+
+```bash
+My first PureScript Giphy App 💃
+```
