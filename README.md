@@ -33,6 +33,8 @@ My first PureScript project 🕺
 1. [PureScript by Example](https://leanpub.com/purescript/read) (Free eBook)
 2. [Let's Build a Simon Game in PureScript](https://medium.com/@arecvlohe/lets-build-a-simon-game-in-purescript-pt-1-b9fa587a11dd)
 3. [PureScript Cheatsheet](https://github.com/joshburgess/purescript-cheat-sheet)
+4. [PureScript Slack Channel](https://fpchat-invite.herokuapp.com/)
+
 ### Bundle
 
 1. Creat an `index.html` at the root of your directory
