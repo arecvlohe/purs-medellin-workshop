@@ -215,15 +215,19 @@ main = do
   renderToDOM "#app" app.markup app.input
 ```
 
-6. Do your happy dance!
+6. Run server
+
+```bash
+pulp server
+```
+
+7. Do your happy dance!
 
 ```bash
 My first PureScript side-effect 🕺
 ```
 
 ## Part 5: HTTP Side-Effect
-
-In this part of the workshop we will work towards making an API request to the GIPHY API and getting a random image in response.
 
 1. Install necessary modules
 
@@ -325,7 +329,13 @@ main = do
   renderToDOM "#app" app.markup app.input
 ```
 
-11. Do your happy dance!
+11. Run server
+
+```
+pulp server
+```
+
+12. Do your happy dance!
 
 ```bash
 My first PureScript HTTP request 🕺 💃
@@ -391,7 +401,13 @@ main = do
   renderToDOM "#app" app.markup app.input
 ```
 
-6. Do your happy dance!
+6. Run server
+
+```bash
+pulp server
+```
+
+7. Do your happy dance!
 
 ```bash
 My first PureScript Giphy App 💃
