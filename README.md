@@ -220,3 +220,113 @@ main = do
 ```bash
 My first PureScript side-effect 🕺
 ```
+
+## Part 5: HTTP Side-Effect
+
+In this part of the workshop we will work towards making an API request to the GIPHY API and getting a random image in response.
+
+1. Install necessary modules
+
+```bash
+psc-package install argonaut-codecs affjax
+```
+
+2. Import modules
+
+```haskell
+import Control.Monad.Aff (attempt)
+import Data.Argonaut.Decode (decodeJson, (.?))
+import Data.Argonaut.Decode.Class (class DecodeJson)
+import Data.Either (Either(Left, Right), either)
+import Data.Newtype (class Newtype, un)
+import Network.HTTP.Affjax (AJAX, get)
+
+import Text.Smolder.HTML (button, div, img)
+import Text.Smolder.HTML.Attributes (src)
+import Text.Smolder.Markup (text, (#!), (!))
+```
+
+3. Define effects
+
+```haskell
+type AppEffects = ( console:: CONSOLE, ajax:: AJAX )
+```
+
+4. Define user actions
+
+```haskell
+data Event = RequestGiphy | ReceiveGiphy (Either String Url)
+```
+
+5. Define a newtype (for decoding)
+
+```haskell
+newtype Url = Url String
+
+derive instance newtypeUrl :: Newtype Url _
+
+unwrap :: Url -> String
+unwrap = un Url
+```
+
+6. Define the state
+
+```haskell
+type State = Url
+```
+
+7. Decoder
+
+```haskell
+instance decodeJsonUrl :: DecodeJson Url where
+  decodeJson json = do
+    obj <- decodeJson json
+    info <- obj .? "data"
+    imgUrl <- info .? "image_original_url"
+    pure $ Url imgUrl
+```
+
+8. Update
+
+```haskell
+foldp :: ∀ fx. Event -> State -> EffModel State Event AppEffects
+foldp RequestGiphy state = { state: state, effects: [
+  do
+    result <- attempt $ get "https://api.giphy.com/v1/gifs/random?api_key=670526ba3bda46629f097f67890105ed&tag=&rating=G"
+    let decode res = decodeJson res.response :: Either String Url
+    let url = either (Left <<< show) decode result
+    pure $ Just $ ReceiveGiphy url
+]}
+foldp (ReceiveGiphy (Left _)) state = { state: state, effects: [ log "Error" *> pure Nothing ] }
+foldp (ReceiveGiphy (Right url)) state = { state: url, effects: [ log "ReceivedGiphy" *> pure Nothing ]}
+```
+
+9. View
+
+```haskell
+view url =
+  div do
+    button #! onClick (const RequestGiphy) $ text "Get Random Giphy"
+    img ! src (unwrap url)
+```
+
+10. Main
+
+```haskell
+main :: ∀ fx. Eff (CoreEffects AppEffects) Unit
+main = do
+  app <- start
+    { initialState: Url "" -- 👈
+    , view
+    , foldp
+    , inputs: []
+    }
+
+  renderToDOM "#app" app.markup app.input
+```
+
+11. Do your happy dance!
+
+```bash
+My first PureScript HTTP request 🕺 💃
+```
